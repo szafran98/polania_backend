@@ -1,0 +1,25 @@
+{
+   "url": "mongodb://localhost:27017/polaniaDb",
+   "type": "mongodb",
+   "host": "localhost",
+   "port": 27017,
+   "username": "test",
+   "password": "test",
+   "database": "polaniaDb",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "server/backend/entity/**/*.ts"
+   ],
+   "migrations": [
+      "server/backend/migration/**/*.ts"
+   ],
+   "subscribers": [
+      "server/backend/subscriber/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "server/backend/entity",
+      "migrationsDir": "server/backend/migration",
+      "subscribersDir": "server/backend/subscriber"
+   }
+}
