@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src *;">
+    <style>
+        #scena {
+            width: 544px;
+            height: 544px;
+            position: relative;
+            border: 2px solid black;
+        }
+        canvas { position: absolute; }
+        #ctx { z-index: 3; width: 544px; height: 544px;}
+    </style>
+    <meta charset="UTF-8">
+    <title>Polania</title>
+</head>
+<body id="body">
+<div>
+    <div id="dev-logger" style="right: 20%; position: absolute">
+
+    </div>
+    <div id="scena">
+        <canvas id="ctx" width="544" height="544" style="border: 1px solid black"></canvas>
+        <div id="ui" style="display: flex;    width: 544px;
+    height: 150px;
+    top: 394px; position: absolute">
+            <input id="attack-btn" style="    bottom: 125px;
+    position: absolute;
+    right: 50px;" type="button" value="Atak">
+            <input id="move-btn" style="    bottom: 75px;
+    position: absolute;
+    right: 50px;" type="button" value="Krok">
+            <input id="exitBtn" style="    bottom: 25px;
+    position: absolute;
+    right: 50px;" type="button" value="Koniec">
+            <div id="fight-log" style="width: 400px; height: 150px; overflow-y: scroll">
+
+            </div>
+        </div>
+    </div>
+    <div id="chat-text" style="width: 500px; height: 100px; overflow-y: scroll"></div>
+    <form id="chat-form">
+        <input type="text" id="chat-input" style="width: 500px">
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
+<script src="public/bundle.js"></script>
+</body>
+</html>
