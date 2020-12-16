@@ -139,6 +139,10 @@ export default class Trade {
                     player2Item
                 );
             } finally {
+                this.player1.instance.playerSocket.emit('tradeCompleted')
+                this.player2.instance.playerSocket.emit('tradeCompleted')
+
+
                 game.ACTUAL_TRADES_LIST = game.ACTUAL_TRADES_LIST.filter(
                     (trade) => {
                         if (trade.id !== this.id) {
@@ -146,6 +150,7 @@ export default class Trade {
                         }
                     }
                 );
+
             }
         }
         console.log(this.player1.instance.statistics.equipment.backpack)
