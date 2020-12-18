@@ -10,6 +10,8 @@ import {
     ICollisionEntity,
     IMapWorld,
 } from '../../../Interfaces';
+import NonPlayableCharacter from "../../backend/entity/NonPlayableCharacter";
+import Npc from "./characters/Npc";
 
 export default class Map {
     mapData: any;
@@ -25,7 +27,7 @@ export default class Map {
     mapLayersData: number[][] = [];
     enemiesOnMap: Enemy[] = [];
     killedEnemies: Enemy[] = [];
-
+    npcsOnMap: Npc[] = []
     itemsOnMap: any[] = [];
 
     constructor() {
@@ -48,8 +50,6 @@ export default class Map {
                 height: this.mapData.height * this.tile_sheet.tile_height,
                 width: this.mapData.width * this.tile_sheet.tile_width,
             },
-            //imageSrc: `http://localhost:2000/client/public/img/${this.mapData.tilesets[0].name}.png`,
-            //imageSrc: require(`/img/${this.mapData.tilesets[0].name}.png`),
             imageSrc: `./img/${this.mapData.tilesets[0].name}.png`,
         };
     }
@@ -131,10 +131,11 @@ export default class Map {
         return new Promise((resolve) => {
             objectLayer.objects.forEach(
                 (value: any, index: any, array: any) => {
+                    // READ ENEMIES OBJECTS DATA
                     if (value.type === 'enemy') {
                         EnemyExample.findOne(value.properties[0].value).then(
                             (res) => {
-                                let response: any = Object.assign(res!);
+                                let response: any = Object.assign(res);
                                 response.databaseId = response!.id.toString();
                                 response.x = value.x;
                                 response.y = value.y;
@@ -146,6 +147,21 @@ export default class Map {
                                 if (index === array.length - 1) resolve();
                             }
                         );
+                    } else if (value.type === 'npc') {
+                        //console.log(value)
+                        NonPlayableCharacter.findOne(value.properties[0].value).then(
+                            res => {
+                                let response: any = Object.assign(res)
+                                response.databaseId = response!.id.toString();
+                                response.x = value.x;
+                                response.y = value.y;
+                                response.id = value.id;
+
+                                let npc = new Npc(response)
+                                this.npcsOnMap.push(npc)
+                                if (index === array.length - 1) resolve();
+                            }
+                        )
                     }
                 }
             );

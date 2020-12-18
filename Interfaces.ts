@@ -227,3 +227,16 @@ export interface IEquipment {
     boots: IItem;
     backpack: IItem[];
 }
+
+export interface INpc {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    imageSrc: string;
+    conversationOptions: object;
+    conversationOptionsTree: object;
+    databaseId: string
+}
