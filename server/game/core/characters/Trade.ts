@@ -1,6 +1,10 @@
 import Player from './Player';
 import { IOwnedItem } from '../../../../Interfaces';
 import { game } from '../../../../app';
+import {getMongoManager} from "typeorm";
+import OwnedItem from "../../../backend/entity/OwnedItem";
+import { ObjectID } from 'mongodb'
+import Character from "../../../backend/entity/Character";
 
 export default class Trade {
     id = Math.random();
@@ -47,6 +51,9 @@ export default class Trade {
         this.player1.instance.playerSocket.on(
             'setOfferedItemInTrade',
             (itemData: IOwnedItem) => {
+                if (this.player1 === null || this.player2 === null) return
+                console.log(this);
+                console.log(game.ACTUAL_TRADES_LIST);
                 let itemOfferedByPlayer = this.player1.instance.statistics.equipment.backpack.find(
                     (item) => item.itemData.id === itemData.itemData.id
                 );
@@ -64,7 +71,8 @@ export default class Trade {
         this.player2.instance.playerSocket.on(
             'setOfferedItemInTrade',
             (itemData: IOwnedItem) => {
-                //console.log(itemData);
+                if (this.player1 === null || this.player2 === null) return
+                console.log(this);
                 let itemOfferedByPlayer = this.player2.instance.statistics.equipment.backpack.find(
                     (item) => item.itemData.id === itemData.itemData.id
                 );
@@ -80,19 +88,22 @@ export default class Trade {
 
     playerIsOfferAcceptedListener() {
         this.player1.instance.playerSocket.on('acceptTradeOffer', () => {
+            if (this.player1 === null || this.player2 === null) return
             this.player1.isOfferAccepted = true;
             this.synchronizeTradeStateInClient();
             this.isTradeAcceptedByParticipants();
         });
 
         this.player2.instance.playerSocket.on('acceptTradeOffer', () => {
+            if (this.player1 === null || this.player2 === null) return
             this.player2.isOfferAccepted = true;
             this.synchronizeTradeStateInClient();
             this.isTradeAcceptedByParticipants();
         });
     }
 
-    isTradeAcceptedByParticipants() {
+    async isTradeAcceptedByParticipants() {
+        if (this.player1 === null || this.player2 === null) return
         if (this.player1.isOfferAccepted && this.player2.isOfferAccepted) {
             try {
                 //GET PLAYER1 ITEM
@@ -138,9 +149,62 @@ export default class Trade {
                 this.player1.instance.statistics.equipment.backpack.push(
                     player2Item
                 );
+
+                console.log(player1Item.id)
+                console.log('player 1 item id ^^^^^')
+
+                // REMOVE ITEM FOR PLAYER 1 IN DB
+                const manager = getMongoManager();
+                await manager.updateOne(
+                    Character,
+                    {
+                        '_id': ObjectID(this.player1.instance.id),
+                    },
+                    {
+                        '$pull': {
+                            'ownedItemsIds': player1Item.id
+                        },
+                    }
+                )
+                await manager.updateOne(
+                    Character,
+                    {
+                        '_id': ObjectID(this.player1.instance.id),
+                    },
+                    {
+                        '$push': {
+                            'ownedItemsIds': player2Item.id
+                        },
+                    }
+                );
+                await manager.updateOne(
+                    Character,
+                    {
+                        '_id': ObjectID(this.player2.instance.id),
+                    },
+                    {
+                        '$pull': {
+                            'ownedItemsIds': player2Item.id
+                        },
+                    }
+                )
+                await manager.updateOne(
+                    Character,
+                    {
+                        '_id': ObjectID(this.player2.instance.id),
+                    },
+                    {
+                        '$push': {
+                            'ownedItemsIds': player1Item.id
+                        },
+                    }
+                );
+
             } finally {
                 this.player1.instance.playerSocket.emit('tradeCompleted')
                 this.player2.instance.playerSocket.emit('tradeCompleted')
+
+
 
 
                 game.ACTUAL_TRADES_LIST = game.ACTUAL_TRADES_LIST.filter(

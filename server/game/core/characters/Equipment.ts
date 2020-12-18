@@ -6,6 +6,7 @@ import Character from '../../../backend/entity/Character';
 import Player from './Player';
 import { ObjectID } from 'mongodb';
 import { User } from '../../../backend/entity/User';
+import OwnedItem from "../../../backend/entity/OwnedItem";
 
 export class Equipment {
     helmet: IOwnedItem = null;
@@ -80,7 +81,6 @@ export class Equipment {
         afterDrag: IOwnedItem,
         player: Player
     ) {
-        //beforeDrag.fieldInEquipment = 'chuj';
         //console.log(afterDrag);
         let fromField = beforeDrag.fieldInEquipment;
 
@@ -102,6 +102,7 @@ export class Equipment {
                     this[property] = null;
 
                     const manager = getMongoManager();
+                    /*
                     await manager.updateOne(
                         Character,
                         {
@@ -114,8 +115,20 @@ export class Equipment {
                             },
                         }
                     );
-                    //.then((res) => console.log(res))
-                    //.catch((err) => console.log(err));
+
+                     */
+                    await manager.updateOne(
+                        OwnedItem,
+                        {
+                            '_id': ObjectID(afterDrag.id),
+                        },
+                        {
+                            $set: {
+                                'fieldInEquipment':
+                                afterDrag.fieldInEquipment,
+                            },
+                        }
+                    );
                 }
             }
             beforeDrag.fieldInEquipment = afterDrag.fieldInEquipment;
@@ -134,21 +147,10 @@ export class Equipment {
                     this[property] = beforeDrag;
 
                     console.log('case 2 inside');
-                    /*
-                    Character.findOne(player.id).then((res) =>
-                        res.ownedItems.forEach(async (ownedIdem) => {
-                            if (ownedIdem.fieldInEquipment === fromField) {
-                                ownedIdem.fieldInEquipment =
-                                    afterDrag.fieldInEquipment;
-                                let manager = getMongoManager();
-                                await manager.save(res);
-                            }
-                        })
-                    );
 
-                     */
 
                     const manager = getMongoManager();
+                    /*
                     await manager.updateOne(
                         Character,
                         {
@@ -161,8 +163,20 @@ export class Equipment {
                             },
                         }
                     );
-                    //.then((res) => console.log(res))
-                    //.catch((err) => console.log(err));
+
+                     */
+                    await manager.updateOne(
+                        OwnedItem,
+                        {
+                            '_id': ObjectID(afterDrag.id),
+                        },
+                        {
+                            $set: {
+                                'fieldInEquipment':
+                                afterDrag.fieldInEquipment,
+                            },
+                        }
+                    );
 
                     let indexInBackpack = this.backpack.indexOf(beforeDrag);
                     if (indexInBackpack > -1) {
@@ -185,20 +199,19 @@ export class Equipment {
 
                     console.log(fromField, afterDrag.fieldInEquipment);
                     const manager = getMongoManager();
+
                     await manager.updateOne(
-                        Character,
+                        OwnedItem,
                         {
-                            'ownedItems.fieldInEquipment': fromField,
+                            '_id': ObjectID(afterDrag.id),
                         },
                         {
                             $set: {
-                                'ownedItems.$.fieldInEquipment':
+                                'fieldInEquipment':
                                 afterDrag.fieldInEquipment,
                             },
                         }
                     );
-                    //.then((res) => console.log(res))
-                    //.catch((err) => console.log(err));
                 }
             }
         } else {

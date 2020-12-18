@@ -98,7 +98,7 @@ export default class GameServer {
                             this.dragItem(socket, player);
                             this.getItemFromGround(socket, player);
                             this.requestTradeWithPlayer(socket, player);
-
+                            this.abortTrade(socket, player)
                             //this.dumpCharacterStateToDb(player);
                         }
 
@@ -148,6 +148,23 @@ export default class GameServer {
                     });
             });
         });
+    }
+
+    abortTrade(socket: SocketIO.Socket, player: Player) {
+        socket.on('tradeAborted', (tradeId: number) => {
+            let trade = this.ACTUAL_TRADES_LIST.find(trade => trade.id === tradeId)
+
+            trade.player1.instance.playerSocket.emit('tradeCompleted')
+            trade.player2.instance.playerSocket.emit('tradeCompleted')
+
+            trade.player1 = null
+            trade.player2 = null
+            this.ACTUAL_TRADES_LIST = this.ACTUAL_TRADES_LIST.filter(tradeInstance => {
+                if (tradeInstance.id !== trade.id) {
+                    return tradeInstance
+                }
+            })
+        })
     }
 
     requestTradeWithPlayer(socket: SocketIO.Socket, player: Player) {
@@ -247,7 +264,6 @@ export default class GameServer {
             ) {
                 // PRZENIESIENIE Z PLECAKA DO PLECAKA
                 console.log('case 2');
-                console.log('case 2 kurwaaaaaaą');
                 for (let i in player.statistics.equipment) {
                     if (i === 'backpack') {
                         console.log('i = backpack');
