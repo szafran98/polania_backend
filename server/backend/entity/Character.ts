@@ -25,9 +25,6 @@ export default class Character extends BaseEntity {
     y!: number;
 
     @Column()
-    collection!: object;
-
-    @Column()
     currentDirection!: number;
 
     @Column()
