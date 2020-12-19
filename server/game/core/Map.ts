@@ -43,6 +43,7 @@ export default class Map {
             isMapLoaded: this.isMapLoaded,
             mapLayersData: this.mapLayersData,
             enemiesOnMap: this.enemiesOnMap,
+            npcsOnMap: this.npcsOnMap,
             itemsOnMap: this.itemsOnMap,
             world: <IMapWorld>{
                 map: this.mapLayersData,
@@ -155,6 +156,8 @@ export default class Map {
                                 response.databaseId = response!.id.toString();
                                 response.x = value.x;
                                 response.y = value.y;
+                                response.width = value.width
+                                response.height = value.height
                                 response.id = value.id;
 
                                 let npc = new Npc(response)

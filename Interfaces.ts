@@ -205,6 +205,7 @@ export interface IMapData {
     isMapLoaded: boolean;
     mapLayersData: number[][];
     enemiesOnMap: Enemy[];
+    npcsOnMap: INpc[];
     itemsOnMap: any[];
     world: { columns: any; width: number; map: number[][]; height: number };
     imageSrc: string;
