@@ -162,6 +162,7 @@ export default class Map {
 
                                 let npc = new Npc(response)
                                 this.npcsOnMap.push(npc)
+                                this.createObjectCollision(npc)
                                 if (index === array.length - 1) resolve();
                             }
                         )
@@ -192,8 +193,8 @@ export default class Map {
         this.isMapLoaded = true;
     }
 
-    createObjectCollision(enemy: Enemy): void {
-        let collisionMap = enemy.collisionMap;
+    createObjectCollision(entity: Enemy | Npc): void {
+        let collisionMap = entity.collisionMap;
         if (collisionMap instanceof Array) {
             this.collisionMap.push(...collisionMap);
         } else {

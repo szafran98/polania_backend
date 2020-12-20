@@ -1,5 +1,6 @@
 import Enemy from './server/game/core/characters/Enemy';
 import { Class, ItemType } from './server/game/Enums';
+import Npc from "./server/game/core/characters/Npc";
 
 export interface IReceivedMap {
     compressionlevel: number;
@@ -200,14 +201,14 @@ export interface ICollisionEntity {
 }
 
 export interface IMapData {
-    collisionMap: [];
+    collisionMap: ICollisionEntity[];
     tilesToCollide: number[];
     isMapLoaded: boolean;
     mapLayersData: number[][];
     enemiesOnMap: Enemy[];
-    npcsOnMap: INpc[];
+    npcsOnMap: Npc[];
     itemsOnMap: any[];
-    world: { columns: any; width: number; map: number[][]; height: number };
+    world: IMapWorld;
     imageSrc: string;
 }
 
