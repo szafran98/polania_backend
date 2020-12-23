@@ -20,6 +20,9 @@ export default class NonPlayableCharacter extends BaseEntity {
     imageSrc!: string;
 
     @Column()
+    offeringItemsIds: ObjectID[]
+
+    @Column()
     conversationOptions!: object
 
     @Column()

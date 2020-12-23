@@ -1,4 +1,8 @@
-import {ICollisionEntity, INpc} from "../../../../Interfaces";
+import {ICollisionEntity, IItem, INpc} from "../../../../Interfaces";
+import {getMongoManager, getRepository} from "typeorm";
+import OwnedItem from "../../../backend/entity/OwnedItem";
+import ItemBlueprint from "../../../backend/entity/ItemBlueprint";
+import { ObjectID } from 'mongodb'
 
 
 export default class Npc implements INpc {
@@ -9,11 +13,12 @@ export default class Npc implements INpc {
     width: number;
     height: number;
     imageSrc: string
+    offeringItems: ItemBlueprint[]
     conversationOptions: object
     conversationOptionsTree: object
     databaseId: string
 
-    constructor(data: INpc) {
+    constructor(data: any) {
         this.id = data.id
         this.name = data.name
         this.x = data.x
@@ -24,6 +29,11 @@ export default class Npc implements INpc {
         this.conversationOptions = data.conversationOptions
         this.conversationOptionsTree = data.conversationOptionsTree
         this.databaseId = data.databaseId
+
+        this.getNpcOfferingItemsData(data.offeringItemsIds).then(res => {
+            this.offeringItems = res
+            console.log('npc offer ^^^^^')
+        })
 
         console.log(this)
     }
@@ -63,5 +73,21 @@ export default class Npc implements INpc {
         } else {
             return [this.collider];
         }
+    }
+
+    async getNpcOfferingItemsData(offeringItemsIds: string[]) {
+        console.log(offeringItemsIds);
+
+        let idsToQuery = [];
+        offeringItemsIds.forEach((id) => {
+            idsToQuery.push(ObjectID(id));
+        });
+
+        const manager = getMongoManager();
+        const repository = getRepository(ItemBlueprint);
+        const items = await repository.findByIds(idsToQuery);
+
+        return items;
+
     }
 }

@@ -69,19 +69,7 @@ export default class Player extends Entity implements IPlayer {
         const items = await repository.findByIds(idsToQuery);
 
         return items;
-        /*
-        for (const itemId of ownedItemsIds) {
-            await manager.findOne(OwnedItem, {
-                '_id' : ObjectID('itemId'),
-            });
-        }
-         */
-        /*
-        await manager
-            .findByIds(OwnedItem, ownedItemsIds)
-            .then((res) => console.log(res));
-        console.log('owned items ids ^^^^');
-         */
+
     }
 
     coordinatesNormalizer() {

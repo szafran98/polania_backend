@@ -238,6 +238,7 @@ export interface INpc {
     width: number;
     height: number;
     imageSrc: string;
+    offeringItems: any[]
     conversationOptions: object;
     conversationOptionsTree: object;
     databaseId: string
