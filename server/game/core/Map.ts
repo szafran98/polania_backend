@@ -152,7 +152,7 @@ export default class Map {
                         //console.log(value)
                         NonPlayableCharacter.findOne(value.properties[0].value).then(
                             res => {
-                                let response: any = Object.assign(res)
+                                let response: any = Object.assign(res!)
                                 response.databaseId = response!.id.toString();
                                 response.x = value.x;
                                 response.y = value.y;
