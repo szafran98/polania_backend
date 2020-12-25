@@ -1,6 +1,7 @@
 import Enemy from './server/game/core/characters/Enemy';
 import { Class, ItemType } from './server/game/Enums';
 import Npc from "./server/game/core/characters/Npc";
+import {ObjectID} from "mongodb";
 
 export interface IReceivedMap {
     compressionlevel: number;
@@ -99,12 +100,6 @@ export interface ITile {
     };
 }
 
-export interface IOwnedItem {
-    id: string;
-    itemData: IItem;
-    fieldInEquipment?: string;
-}
-
 export interface IItem {
     id: string;
     name: string;
@@ -118,6 +113,7 @@ export interface IItem {
 
 export interface IStats {
     maxHealth?: number;
+    health?: number;
     attack?: number[] | number;
     attackSpeed?: number;
     criticalStrikeChance?: number;
@@ -172,27 +168,6 @@ export interface IEnemy extends IEntity {
     databaseId: string;
 }
 
-export interface IStats {
-    maxHealth?: number;
-    attack?: number[] | number;
-    attackSpeed?: number;
-    criticalStrikeChance?: number;
-    criticalStrikePower?: number;
-    strength?: number;
-    dexterity?: number;
-    intellect?: number;
-    energy?: number;
-    mana?: number;
-    resistance?: {
-        fire?: number;
-        frost?: number;
-        lightning?: number;
-        poison?: number;
-    };
-    armor?: number;
-    dodge?: number;
-}
-
 export interface ICollisionEntity {
     x1: number;
     x2: number;
@@ -242,4 +217,10 @@ export interface INpc {
     conversationOptions: object;
     conversationOptionsTree: object;
     databaseId: string
+}
+
+export interface IOwnedItem {
+    id: ObjectID;
+    itemData: IItem;
+    fieldInEquipment?: string;
 }

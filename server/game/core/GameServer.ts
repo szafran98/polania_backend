@@ -13,8 +13,13 @@ import Player from './characters/Player';
 import Map from './Map';
 import Group from './characters/Group';
 import Character from '../../backend/entity/Character';
-import { IOwnedItem } from '../../../Interfaces';
+import {IItem, IOwnedItem} from '../../../Interfaces';
 import Trade from './characters/Trade';
+import OwnedItem from "../../backend/entity/OwnedItem";
+import Item from "./characters/Item";
+import ItemBlueprint from "../../backend/entity/ItemBlueprint";
+import {ItemType} from "../Enums";
+import {stringify} from "querystring";
 
 export default class GameServer {
     SOCKETS_LIST: SocketIO.Socket[] = [];
@@ -99,6 +104,8 @@ export default class GameServer {
                             this.getItemFromGround(socket, player);
                             this.requestTradeWithPlayer(socket, player);
                             this.abortTrade(socket, player)
+                            this.buyItem(socket, player)
+                            this.doItemDbClickAction(socket, player)
                             //this.dumpCharacterStateToDb(player);
                         }
 
@@ -148,6 +155,41 @@ export default class GameServer {
                     });
             });
         });
+    }
+
+    doItemDbClickAction(socket: SocketIO.Socket, player: Player) {
+        socket.on('doItemDbClickAction', (itemId: string) => {
+            console.log('halo kurwa -1')
+            console.log(itemId)
+            let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
+                console.log(String(itemInstance.id) === itemId)
+                console.log(typeof stringify(itemInstance.id), typeof itemId)
+                return String(itemInstance.id) === itemId
+            })
+            if (itemInstance) {
+                console.log('halo kurwa 0')
+                if (itemInstance.itemData.type === ItemType.CONSUMABLE) {
+                    Item.doConsumableItemDbClickAction(itemInstance, player)
+                }
+            }
+        })
+    }
+
+    buyItem(socket: SocketIO.Socket, player: Player) {
+        socket.on('buyItem', (itemData: ItemBlueprint) => {
+            let firstEmptyFieldInBackpack
+
+            for (let i = 1; i < 42; i++) {
+                let playerBackpack = player.statistics.equipment.backpack
+                let instanceInCheckedField = playerBackpack.find(itemInField => itemInField.fieldInEquipment === `field${i}`)
+                if (!instanceInCheckedField) {
+                    firstEmptyFieldInBackpack = `field${i}`
+                    break
+                }
+            }
+
+            player.statistics.equipment.addToBackpack(itemData, firstEmptyFieldInBackpack, player)
+        })
     }
 
     abortTrade(socket: SocketIO.Socket, player: Player) {

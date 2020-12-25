@@ -71,6 +71,7 @@ export default class CharacterController {
             newCharacter.y = 256;
             newCharacter.currentDirection = 0;
             newCharacter.imageSrc = 'm_pal28.png';
+            newCharacter.ownedItemsIds = []
             newCharacter.statistics = new Stats();
             newCharacter.statistics.attack = [7, 9];
             newCharacter.statistics.attackSpeed = 1;

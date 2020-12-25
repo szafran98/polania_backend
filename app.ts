@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(
     cors({
-        origin: ['http://localhost:2000/', 'http://localhost:8080/', 'http://159.65.115.115/', 'http://159.65.115.115:80/server', 'http://polania.me/', 'http://www.polania.me/'],
+        origin: ['http://localhost:2000/', 'http://localhost:8080/', 'http://159.65.115.115/', 'http://159.65.115.115:80/server', 'http://polania.ml/', 'http://www.polania.ml/'],
     })
 );
 app.options('*', cors());

@@ -1,4 +1,4 @@
-import { IItem, IOwnedItem, IStats } from '../../../../Interfaces';
+import {IItem, IOwnedItem, IStats} from '../../../../Interfaces';
 import { ItemType } from '../../Enums';
 import Item from './Item';
 import { getMongoManager, getMongoRepository } from 'typeorm';
@@ -7,6 +7,7 @@ import Player from './Player';
 import { ObjectID } from 'mongodb';
 import { User } from '../../../backend/entity/User';
 import OwnedItem from "../../../backend/entity/OwnedItem";
+import ItemBlueprint from "../../../backend/entity/ItemBlueprint";
 
 export class Equipment {
     helmet: IOwnedItem = null;
@@ -75,6 +76,50 @@ export class Equipment {
         //}
         return statsSum;
     }
+
+    async addToBackpack(item: ItemBlueprint, fieldInEquipment: string, player: Player) {
+
+
+
+        let ownedItem = new OwnedItem()
+        ownedItem.itemData = item
+        ownedItem.fieldInEquipment = fieldInEquipment
+
+
+
+        let manager = getMongoManager()
+
+        let newItemDatabaseId
+
+        await manager.insert(OwnedItem, ownedItem).then(async res => {
+            newItemDatabaseId = res.raw.insertedId
+
+            // @ts-ignore
+            item.id = item.id.toString()
+            ownedItem.id = newItemDatabaseId
+            // @ts-ignore
+            ownedItem = {
+                id: newItemDatabaseId.toString(),
+                // @ts-ignore
+                itemData: new Item(item),
+                fieldInEquipment: fieldInEquipment
+            }
+
+            // @ts-ignore
+            this.backpack.push(ownedItem)
+            player.playerSocket.emit('putBoughtItemInBackpack', ownedItem)
+
+        }).then(async () => {
+            await manager.updateOne(Character, { '_id': ObjectID(player.id) }, {
+                $push: {
+                    'ownedItemsIds': newItemDatabaseId
+                }
+            })
+        })
+    }
+
+
+    //async addBoughtItemAndSaveInDatabase(item: IOwnedItem)
 
     async updateItemAfterDragging(
         beforeDrag: IOwnedItem,
