@@ -110,6 +110,40 @@
                  "width":64,
                  "x":64,
                  "y":1344
+                }, 
+                {
+                 "height":32,
+                 "id":32,
+                 "name":"Krolik",
+                 "properties":[
+                        {
+                         "name":"dbId",
+                         "type":"string",
+                         "value":"5fe64c8f9321311160ded5bc"
+                        }],
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":32,
+                 "x":480,
+                 "y":1472
+                }, 
+                {
+                 "height":32,
+                 "id":33,
+                 "name":"Krolik",
+                 "properties":[
+                        {
+                         "name":"dbId",
+                         "type":"string",
+                         "value":"5fe64c8f9321311160ded5bc"
+                        }],
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":1376
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -146,7 +180,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":32,
+ "nextobjectid":34,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tiledversion":"1.4.1",
@@ -2855,7 +2889,6 @@
                  "objectgroup":
                     {
                      "draworder":"index",
-                     "id":2,
                      "name":"",
                      "objects":[
                             {

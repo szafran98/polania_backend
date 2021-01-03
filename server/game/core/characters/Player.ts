@@ -25,6 +25,7 @@ export default class Player extends Entity implements IPlayer {
     imageSrc: string;
 
     isPlayerCollided = false;
+    gold: number;
 
     //equipment: Equipment;
     constructor(data: any) {
@@ -32,8 +33,9 @@ export default class Player extends Entity implements IPlayer {
         this.currentDirection = data.currentDirection;
         this.socketId = data.socketId;
         this.imageSrc = data.imageSrc;
+        this.gold = data.gold;
 
-        console.log(data.ownedItemsIds);
+        console.log(data);
         this.getPlayerOwnedItemsData(data.ownedItemsIds).then((res: any[]) => {
             this.statistics.equipment = new Equipment(res);
             this.statistics.maxHealth = this.statistics.calculateMaxHealth();

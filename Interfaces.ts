@@ -161,6 +161,7 @@ export interface IPlayer extends IEntity {
     pressingUp?: boolean;
     pressingDown?: boolean;
     mapData?: any;
+    gold: number
 }
 
 export interface IEnemy extends IEntity {

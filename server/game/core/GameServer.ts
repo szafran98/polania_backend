@@ -105,6 +105,7 @@ export default class GameServer {
                             this.requestTradeWithPlayer(socket, player);
                             this.abortTrade(socket, player)
                             this.buyItem(socket, player)
+                            this.sellItem(socket, player)
                             this.doItemDbClickAction(socket, player)
                             //this.dumpCharacterStateToDb(player);
                         }
@@ -175,6 +176,29 @@ export default class GameServer {
         })
     }
 
+    sellItem(socket: SocketIO.Socket, player: Player) {
+        socket.on('sellItem', (itemData: IOwnedItem) => {
+            // ZNAJDŹ INSTANCJE
+            let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
+                if (itemInstance.id === itemData.id) {
+                    return itemInstance
+                }
+            })
+            console.log(itemInstance)
+
+            // WYRZUĆ Z PLECAKA
+            player.statistics.equipment.backpack = player.statistics.equipment.backpack.filter(item => {
+                if (item !== itemInstance) {
+                    return item
+                }
+            })
+            // DODAJ ZŁOTO GRACZOWI
+            player.gold += itemData.itemData.value
+
+            console.log(player.gold, itemData.itemData.value)
+        })
+    }
+
     buyItem(socket: SocketIO.Socket, player: Player) {
         socket.on('buyItem', (itemData: ItemBlueprint) => {
             let firstEmptyFieldInBackpack
@@ -188,7 +212,9 @@ export default class GameServer {
                 }
             }
 
-            player.statistics.equipment.addToBackpack(itemData, firstEmptyFieldInBackpack, player)
+            player.statistics.equipment.addToBackpack(itemData, firstEmptyFieldInBackpack, player).then(() => {
+                player.gold -= itemData.value
+            })
         })
     }
 
@@ -532,6 +558,7 @@ export default class GameServer {
                             y: player.y,
                             currentDirection: player.currentDirection,
                             'statistics.health': player.statistics._health,
+                            gold: player.gold
                         },
                     }
                 )

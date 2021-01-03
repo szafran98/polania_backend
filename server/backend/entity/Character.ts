@@ -35,4 +35,7 @@ export default class Character extends BaseEntity {
 
     @Column()
     ownedItemsIds!: number[];
+
+    @Column()
+    gold!: number
 }
