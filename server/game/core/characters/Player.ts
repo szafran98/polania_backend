@@ -314,6 +314,7 @@ export default class Player extends Entity implements IPlayer {
 
     static update(): Player[] {
         let pack: Player[] = [];
+        //console.log('player update')
 
         for (let i in game.PLAYERS_LIST) {
             let player = game.PLAYERS_LIST[i];

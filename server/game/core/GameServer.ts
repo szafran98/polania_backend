@@ -8,7 +8,8 @@ import {
 } from 'typeorm';
 import axios from 'axios';
 import { ObjectID } from 'mongodb';
-const SocketIO = require('socket.io');
+import SocketIO from "socket.io";
+//const SocketIO = require('socket.io');
 import Player from './characters/Player';
 import Map from './Map';
 import Group from './characters/Group';
@@ -21,6 +22,7 @@ import ItemBlueprint from "../../backend/entity/ItemBlueprint";
 import {ItemType} from "../Enums";
 import {stringify} from "querystring";
 
+
 export default class GameServer {
     SOCKETS_LIST: SocketIO.Socket[] = [];
     PLAYERS_LIST: Player[] = [];
@@ -31,7 +33,6 @@ export default class GameServer {
     map!: Map;
     dbConnection!: Connection;
 
-    //ITEMS_ON_GROUND: any[] = [];
 
     constructor(socket: SocketIO.Server) {
         this.socketio = socket;
@@ -55,8 +56,8 @@ export default class GameServer {
         this.socketio.on('connect', async (socket) => {
             console.log('player connected');
             socket.on('loginOnCharacter', async (loginData) => {
-                //console.log(loginData.character.name);
-
+                console.log(loginData)
+                console.log('login data ^^^^^^')
                 await axios
                     .post(
                         'http://localhost:2000/character/selectedCharacter',
@@ -109,50 +110,6 @@ export default class GameServer {
                             this.doItemDbClickAction(socket, player)
                             //this.dumpCharacterStateToDb(player);
                         }
-
-                        /*
-                        let tokens = res.data.split('.');
-
-                        let middlePayload = JSON.parse(
-                            Buffer.from(tokens[1], 'base64').toString('ascii')
-                        );
-
-                         */
-                        /*
-                        let playerData = { id: 'dss', socketId: 'dssd' };
-
-                        //playerData.id = middlePayload.userId;
-                        //playerData.socketId = socket.id;
-
-                        let isActualyLogged = false;
-
-                        for (let i in this.PLAYERS_LIST) {
-                            if (this.PLAYERS_LIST[i].id === playerData.id) {
-                                isActualyLogged = true;
-                                socket.disconnect();
-                            }
-                        }
-
-                        if (!isActualyLogged) {
-                            let player = new Player(playerData);
-
-                            this.PLAYERS_LIST.push(player);
-                            this.SOCKETS_LIST.push(socket);
-
-                            player.keyPressListener();
-
-                            this.combat(socket);
-                            this.playerCollided(socket, player);
-                            this.addToGroup(socket, player);
-                            this.messageHandler(socket, player);
-                            this.socketDisconnect(socket, player);
-
-                            socket.on('setPlayerName', (data: any) => {
-                                player.name = data;
-                            });
-                        }
-
-                         */
                     });
             });
         });
@@ -474,50 +431,12 @@ export default class GameServer {
                             );
 
                             break;
-                            /*
-                            player.statistics.equipment.updateItemAfterDragging(
-                                player.statistics.equipment[i][itemInBackpack],
-                                updatedObject,
-                                player
-                            );
 
-                             */
                         }
                     }
                 }
             }
 
-            /*
-            for (let i in player.statistics.equipment) {
-                if (
-                    player.statistics.equipment[i] === null //||
-                    //player.statistics.equipment[i] instanceof Array
-                )
-                    continue;
-                //player.statistics.equipment[i].fieldInEquipment =
-                //   draggedItemData.destinationField;
-                if (!Array.isArray(player.statistics.equipment[i])) {
-                    console.log(player.statistics.equipment[i]);
-                    console.log('not array');
-                    player.statistics.equipment.updateItemAfterDragging(
-                        player.statistics.equipment[i],
-                        draggedItemData,
-                        player
-                    );
-                } else {
-                    console.log(player.statistics.equipment[i]);
-                    console.log('array');
-                    player.statistics.equipment.updateItemAfterDragging(
-                        player.statistics.equipment[i][0],
-                        draggedItemData,
-                        player
-                    );
-                }
-
-                //break;
-            }
-
-             */
         });
     }
 
@@ -643,17 +562,18 @@ export default class GameServer {
     }
 
     emitGameData(): void {
+
+
+        //const dataEmitWorker = new Worker('./server/game/core/dataEmiter.js', { type: 'module' })
+
         setInterval(() => {
             let pack = {
                 playersData: Player.update(),
                 mapData: this.map.mapDataToEmit,
             };
-            //console.log(pack.playersData);
 
-            for (let i in this.SOCKETS_LIST) {
-                let socket = this.SOCKETS_LIST[i];
-                socket.emit('newGameData', pack);
-            }
+            this.socketio.sockets.emit('newGameData', pack)
         }, 1000 / 25);
+
     }
 }
