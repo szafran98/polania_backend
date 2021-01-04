@@ -162,6 +162,13 @@ export default class GameServer {
                     ownedItemsIds: ObjectID(itemData.id)
                 }
             })
+            await manager.updateOne(Character, {
+                _id: ObjectID(player.id)
+            }, {
+                $set :{
+                    gold: player.gold
+                }
+            })
         })
     }
 
