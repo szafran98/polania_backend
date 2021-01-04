@@ -55,9 +55,10 @@ export default class GameServer {
     connectionHandler(): void {
         this.socketio.on('connect', async (socket) => {
             console.log('player connected');
+            console.log('player count ' + this.PLAYERS_LIST.length)
+
+            // LOGOWANIE PO WYBRANIU POSTACI
             socket.on('loginOnCharacter', async (loginData) => {
-                console.log(loginData)
-                console.log('login data ^^^^^^')
                 await axios
                     .post(
                         'http://localhost:2000/character/getSelectedCharacter',
@@ -71,11 +72,13 @@ export default class GameServer {
                         }
                     )
                     .then((res) => {
+
                         let character = res.data;
                         character.socketId = socket.id;
 
                         let isActualyLogged = false;
 
+                        // JEŚLI POSTAĆ ZALOGOWANA TO DC
                         for (let i in this.PLAYERS_LIST) {
                             if (this.PLAYERS_LIST[i].id === character.id) {
                                 isActualyLogged = true;
@@ -83,16 +86,12 @@ export default class GameServer {
                             }
                         }
 
+
                         if (!isActualyLogged) {
-                            console.log(character)
-                            console.log('character db data ^^^^^^^^')
                             let player = new Player(character);
 
                             this.PLAYERS_LIST.push(player);
                             this.SOCKETS_LIST.push(socket);
-
-                            console.log(this.PLAYERS_LIST.length);
-                            console.log(this.SOCKETS_LIST.length);
 
                             player.keyPressListener();
 
@@ -134,7 +133,7 @@ export default class GameServer {
     }
 
     sellItem(socket: SocketIO.Socket, player: Player) {
-        socket.on('sellItem', (itemData: IOwnedItem) => {
+        socket.on('sellItem', async (itemData: IOwnedItem) => {
             // ZNAJDŹ INSTANCJE
             let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
                 if (itemInstance.id === itemData.id) {
@@ -153,6 +152,16 @@ export default class GameServer {
             player.gold += itemData.itemData.value
 
             console.log(player.gold, itemData.itemData.value)
+
+            // USUŃ Z BAZY
+            const manager = getMongoManager()
+            await manager.updateOne(Character, {
+                _id: ObjectID(player.id)
+            }, {
+                $pull :{
+                    ownedItemsIds: ObjectID(itemData.id)
+                }
+            })
         })
     }
 
