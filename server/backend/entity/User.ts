@@ -6,7 +6,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BaseEntity,
-    ObjectIdColumn,
+    ObjectIdColumn, ObjectID,
 } from 'typeorm';
 import { Length, IsNotEmpty, IsEmail } from 'class-validator';
 import bcrypt from 'bcryptjs';
@@ -44,8 +44,8 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-    @Column((type) => Character)
-    characters!: Character[];
+    @Column()
+    charactersIds!: ObjectID[];
 
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);

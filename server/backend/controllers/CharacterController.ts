@@ -9,6 +9,24 @@ export default class CharacterController {
     static listAllUserCharacters = async (req: Request, res: Response) => {
         const id: string = req.params.id;
 
+        const characterRepository = getRepository(Character)
+        const userRepository = getRepository(User);
+
+        // Find user and get his characters ids
+        try {
+            let userCharacters = []
+            const user = await userRepository.findOneOrFail(id).then(async res => {
+                userCharacters = await characterRepository.findByIds(res.charactersIds)
+                //console.log(userCharacters)
+            }).then(() => { res.send(userCharacters) })
+            //const userCharacters = characterRepository.findByIds(user.charactersIds)
+            //console.log(userCharacters)
+            //res.send(userCharacters)
+        } catch (e) {
+            res.status(404).send('User not found');
+        }
+
+        /*
         //Get users from database
         const userRepository = getRepository(User);
         try {
@@ -20,27 +38,19 @@ export default class CharacterController {
         } catch (e) {
             res.status(404).send('User not found');
         }
+
+         */
     };
 
     static loginInGameCharacter = async (req: Request, res: Response) => {
-        let characterName = req.body.characterName;
+        let characterId = req.body.characterId;
+        console.log(req.body)
 
         const characterRepository = getRepository(Character);
-        const userRepository = getRepository(User);
+        //const userRepository = getRepository(User);
 
         try {
-            /*
-            const manager = getMongoManager();
-            const userCharacter = await manager.find({
-                //@ts-ignore
-                'characters.name': characterName,
-            });
-
-             */
-
-            const userCharacter = await characterRepository.findOne({
-                name: characterName,
-            });
+            const userCharacter = await characterRepository.findOne(ObjectID(characterId));
             //console.log(userCharacter);
 
             console.log(userCharacter);

@@ -60,9 +60,9 @@ export default class GameServer {
                 console.log('login data ^^^^^^')
                 await axios
                     .post(
-                        'http://localhost:2000/character/selectedCharacter',
+                        'http://localhost:2000/character/getSelectedCharacter',
                         {
-                            characterName: loginData.character.name,
+                            characterId: loginData.characterId,
                         },
                         {
                             headers: {

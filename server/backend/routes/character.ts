@@ -7,7 +7,7 @@ const router = Router();
 router.get('/:id', [checkJwt], CharacterController.listAllUserCharacters);
 
 router.post(
-    '/selectedCharacter',
+    '/getSelectedCharacter',
     [checkJwt],
     CharacterController.loginInGameCharacter
 );
