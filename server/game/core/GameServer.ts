@@ -21,6 +21,7 @@ import Item from "./characters/Item";
 import ItemBlueprint from "../../backend/entity/ItemBlueprint";
 import {ItemType} from "../Enums";
 import {stringify} from "querystring";
+import {Equipment} from "./characters/Equipment";
 
 
 export default class GameServer {
@@ -114,17 +115,13 @@ export default class GameServer {
         });
     }
 
+    // DWUKLIK NA ITEM
     doItemDbClickAction(socket: SocketIO.Socket, player: Player) {
         socket.on('doItemDbClickAction', (itemId: string) => {
-            console.log('halo kurwa -1')
-            console.log(itemId)
             let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
-                console.log(String(itemInstance.id) === itemId)
-                console.log(typeof stringify(itemInstance.id), typeof itemId)
                 return String(itemInstance.id) === itemId
             })
             if (itemInstance) {
-                console.log('halo kurwa 0')
                 if (itemInstance.itemData.type === ItemType.CONSUMABLE) {
                     Item.doConsumableItemDbClickAction(itemInstance, player)
                 }
@@ -140,7 +137,6 @@ export default class GameServer {
                     return itemInstance
                 }
             })
-            console.log(itemInstance)
 
             // WYRZUĆ Z PLECAKA
             player.statistics.equipment.backpack = player.statistics.equipment.backpack.filter(item => {
@@ -151,7 +147,6 @@ export default class GameServer {
             // DODAJ ZŁOTO GRACZOWI
             player.gold += itemData.itemData.value
 
-            console.log(player.gold, itemData.itemData.value)
 
             // USUŃ Z BAZY
             const manager = getMongoManager()
@@ -174,8 +169,9 @@ export default class GameServer {
 
     buyItem(socket: SocketIO.Socket, player: Player) {
         socket.on('buyItem', (itemData: ItemBlueprint) => {
-            let firstEmptyFieldInBackpack
+            let firstEmptyFieldInBackpack = Equipment.getFirstEmptyFieldIdInBackpack(player)
 
+            /*
             for (let i = 1; i < 42; i++) {
                 let playerBackpack = player.statistics.equipment.backpack
                 let instanceInCheckedField = playerBackpack.find(itemInField => itemInField.fieldInEquipment === `field${i}`)
@@ -184,6 +180,8 @@ export default class GameServer {
                     break
                 }
             }
+
+             */
 
             player.statistics.equipment.addToBackpack(itemData, firstEmptyFieldInBackpack, player).then(() => {
                 player.gold -= itemData.value
@@ -223,7 +221,6 @@ export default class GameServer {
                 requestedPlayerInstance.playerSocket.on(
                     'tradeRequestAccepted',
                     () => {
-                        console.log('hwdp');
                         this.ACTUAL_TRADES_LIST.push(
                             new Trade(player, requestedPlayerInstance)
                         );
@@ -239,9 +236,13 @@ export default class GameServer {
                 return itemInstance.id !== item.id;
             });
 
+            /*
             item.item.fieldInEquipment = `field${Math.floor(
                 Math.random() * 42
             )}`;
+
+             */
+            item.item.fieldInEquipment = Equipment.getFirstEmptyFieldIdInBackpack(player)
             player.statistics.equipment.backpack.push(item.item);
 
             socket.emit('pickedUpItem', item.item);

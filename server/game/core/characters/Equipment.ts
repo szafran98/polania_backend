@@ -77,6 +77,19 @@ export class Equipment {
         return statsSum;
     }
 
+    static getFirstEmptyFieldIdInBackpack(player: Player): string {
+        let firstEmptyFieldInBackpack;
+        for (let i = 1; i < 42; i++) {
+            let playerBackpack = player.statistics.equipment.backpack
+            let instanceInCheckedField = playerBackpack.find(itemInField => itemInField.fieldInEquipment === `field${i}`)
+            if (!instanceInCheckedField) {
+                firstEmptyFieldInBackpack = `field${i}`
+                break
+            }
+        }
+        return  firstEmptyFieldInBackpack
+    }
+
     async addToBackpack(item: ItemBlueprint, fieldInEquipment: string, player: Player) {
 
 
