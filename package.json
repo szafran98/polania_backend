@@ -49,6 +49,7 @@
       "comlink": "^4.3.0",
       "cors": "^2.8.5",
       "cross-env": "^7.0.2",
+      "csv-parser": "^3.0.0",
       "dependencies": "0.0.1",
       "express": "^4.17.1",
       "gl-tiled": "git+https://github.com/englercj/gl-tiled.git",

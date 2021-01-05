@@ -19,6 +19,7 @@ import Item from './characters/Item';
 import ItemBlueprint from '../../backend/entity/ItemBlueprint';
 import { ItemType } from '../Enums';
 import { Equipment } from './characters/Equipment';
+import * as expToLevelTable from './exp_table.json';
 
 export default class GameServer {
     SOCKETS_LIST: SocketIO.Socket[] = [];
@@ -27,16 +28,30 @@ export default class GameServer {
     ACTUAL_TRADES_LIST: Trade[] = [];
     PLAYERS_GROUPS: Group[] = [];
     socketio: SocketIO.Server;
-    map!: Map;
-    dbConnection!: Connection;
+    map: Map;
+    dbConnection: Connection;
+    expToLevelTable = expToLevelTable;
 
     constructor(socket: SocketIO.Server) {
         this.socketio = socket;
+        //console.log(this.expToLevelTable['1']);
         this.createDatabaseConnection().then(() => {
             this.map = new Map();
             this.connectionHandler();
             this.emitGameData();
         });
+    }
+
+    readExpToLevelTable() {
+        /*
+        fs.createReadStream(__dirname + '/exp_table.csv')
+            .pipe(csvParser())
+            .on('data', (data) => this.expToLevelTable.push(data))
+            .on('end', () => {
+                console.log(this.expToLevelTable);
+            });
+
+         */
     }
 
     async createDatabaseConnection(): Promise<void> {
@@ -477,6 +492,9 @@ export default class GameServer {
                             y: player.y,
                             currentDirection: player.currentDirection,
                             'statistics.health': player.statistics._health,
+                            'statistics.level': player.statistics._level,
+                            'statistics.experience':
+                                player.statistics._experience,
                             gold: player.gold,
                         },
                     }
