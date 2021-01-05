@@ -1,13 +1,5 @@
-import {
-    Entity,
-    ObjectIdColumn,
-    ObjectID,
-    Column,
-    OneToOne,
-    JoinColumn,
-    BaseEntity,
-} from 'typeorm';
-import ItemBlueprint from './ItemBlueprint';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
+import ItemBlueprint from './ItemBlueprint'
 
 @Entity()
 export default class OwnedItem extends BaseEntity {

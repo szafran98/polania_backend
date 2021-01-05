@@ -1,17 +1,9 @@
-import {
-    Entity,
-    ObjectIdColumn,
-    ObjectID,
-    Column,
-    OneToOne,
-    JoinColumn,
-    BaseEntity,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
 
 @Entity()
 export default class NonPlayableCharacter extends BaseEntity {
     @ObjectIdColumn()
-    id!: number
+    id!: number;
 
     @Column()
     name!: string;
@@ -20,11 +12,11 @@ export default class NonPlayableCharacter extends BaseEntity {
     imageSrc!: string;
 
     @Column()
-    offeringItemsIds: ObjectID[]
+    offeringItemsIds: ObjectID[];
 
     @Column()
-    conversationOptions!: object
+    conversationOptions!: object;
 
     @Column()
-    conversationOptionsTree!: object
+    conversationOptionsTree!: object;
 }

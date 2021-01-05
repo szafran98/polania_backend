@@ -1,14 +1,5 @@
-import {
-    Entity,
-    ObjectIdColumn,
-    ObjectID,
-    Column,
-    OneToOne,
-    JoinColumn,
-    BaseEntity,
-} from 'typeorm';
-import Stats from './Stats';
-import OwnedItem from './OwnedItem';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
+import Stats from './Stats'
 
 @Entity()
 export default class Character extends BaseEntity {
@@ -37,5 +28,5 @@ export default class Character extends BaseEntity {
     ownedItemsIds!: number[];
 
     @Column()
-    gold!: number
+    gold!: number;
 }

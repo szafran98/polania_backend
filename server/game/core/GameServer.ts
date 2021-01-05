@@ -4,25 +4,21 @@ import {
     createConnection,
     getConnection,
     getMongoManager,
-    getRepository,
 } from 'typeorm';
 import axios from 'axios';
 import { ObjectID } from 'mongodb';
-import SocketIO from "socket.io";
-//const SocketIO = require('socket.io');
+import SocketIO from 'socket.io';
+// const SocketIO = require('socket.io');
 import Player from './characters/Player';
 import Map from './Map';
 import Group from './characters/Group';
 import Character from '../../backend/entity/Character';
-import {IItem, IOwnedItem} from '../../../Interfaces';
+import { IOwnedItem } from '../../../Interfaces';
 import Trade from './characters/Trade';
-import OwnedItem from "../../backend/entity/OwnedItem";
-import Item from "./characters/Item";
-import ItemBlueprint from "../../backend/entity/ItemBlueprint";
-import {ItemType} from "../Enums";
-import {stringify} from "querystring";
-import {Equipment} from "./characters/Equipment";
-
+import Item from './characters/Item';
+import ItemBlueprint from '../../backend/entity/ItemBlueprint';
+import { ItemType } from '../Enums';
+import { Equipment } from './characters/Equipment';
 
 export default class GameServer {
     SOCKETS_LIST: SocketIO.Socket[] = [];
@@ -33,7 +29,6 @@ export default class GameServer {
     socketio: SocketIO.Server;
     map!: Map;
     dbConnection!: Connection;
-
 
     constructor(socket: SocketIO.Server) {
         this.socketio = socket;
@@ -56,7 +51,7 @@ export default class GameServer {
     connectionHandler(): void {
         this.socketio.on('connect', async (socket) => {
             console.log('player connected');
-            console.log('player count ' + this.PLAYERS_LIST.length)
+            console.log('player count ' + this.PLAYERS_LIST.length);
 
             // LOGOWANIE PO WYBRANIU POSTACI
             socket.on('loginOnCharacter', async (loginData) => {
@@ -73,23 +68,21 @@ export default class GameServer {
                         }
                     )
                     .then((res) => {
-
-                        let character = res.data;
+                        const character = res.data;
                         character.socketId = socket.id;
 
                         let isActualyLogged = false;
 
                         // JEŚLI POSTAĆ ZALOGOWANA TO DC
-                        for (let i in this.PLAYERS_LIST) {
+                        for (const i in this.PLAYERS_LIST) {
                             if (this.PLAYERS_LIST[i].id === character.id) {
                                 isActualyLogged = true;
                                 socket.disconnect();
                             }
                         }
 
-
                         if (!isActualyLogged) {
-                            let player = new Player(character);
+                            const player = new Player(character);
 
                             this.PLAYERS_LIST.push(player);
                             this.SOCKETS_LIST.push(socket);
@@ -104,11 +97,11 @@ export default class GameServer {
                             this.dragItem(socket, player);
                             this.getItemFromGround(socket, player);
                             this.requestTradeWithPlayer(socket, player);
-                            this.abortTrade(socket, player)
-                            this.buyItem(socket, player)
-                            this.sellItem(socket, player)
-                            this.doItemDbClickAction(socket, player)
-                            //this.dumpCharacterStateToDb(player);
+                            this.abortTrade(socket, player);
+                            this.buyItem(socket, player);
+                            this.sellItem(socket, player);
+                            this.doItemDbClickAction(socket, player);
+                            // this.dumpCharacterStateToDb(player);
                         }
                     });
             });
@@ -118,97 +111,106 @@ export default class GameServer {
     // DWUKLIK NA ITEM
     doItemDbClickAction(socket: SocketIO.Socket, player: Player) {
         socket.on('doItemDbClickAction', (itemId: string) => {
-            let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
-                return String(itemInstance.id) === itemId
-            })
+            const itemInstance = player.statistics.equipment.backpack.find(
+                (itemInstance) => {
+                    return String(itemInstance.id) === itemId;
+                }
+            );
             if (itemInstance) {
                 if (itemInstance.itemData.type === ItemType.CONSUMABLE) {
-                    Item.doConsumableItemDbClickAction(itemInstance, player)
+                    Item.doConsumableItemDbClickAction(itemInstance, player);
                 }
             }
-        })
+        });
     }
 
     sellItem(socket: SocketIO.Socket, player: Player) {
         socket.on('sellItem', async (itemData: IOwnedItem) => {
             // ZNAJDŹ INSTANCJE
-            let itemInstance = player.statistics.equipment.backpack.find(itemInstance => {
-                if (itemInstance.id === itemData.id) {
-                    return itemInstance
+            const itemInstance = player.statistics.equipment.backpack.find(
+                (itemInstance) => {
+                    if (itemInstance.id === itemData.id) {
+                        return itemInstance;
+                    }
                 }
-            })
+            );
 
             // WYRZUĆ Z PLECAKA
-            player.statistics.equipment.backpack = player.statistics.equipment.backpack.filter(item => {
-                if (item !== itemInstance) {
-                    return item
+            player.statistics.equipment.backpack = player.statistics.equipment.backpack.filter(
+                (item) => {
+                    if (item !== itemInstance) {
+                        return item;
+                    }
                 }
-            })
+            );
             // DODAJ ZŁOTO GRACZOWI
-            player.gold += itemData.itemData.value
-
+            player.gold += itemData.itemData.value;
 
             // USUŃ Z BAZY
-            const manager = getMongoManager()
-            await manager.updateOne(Character, {
-                _id: ObjectID(player.id)
-            }, {
-                $pull :{
-                    ownedItemsIds: ObjectID(itemData.id)
+            const manager = getMongoManager();
+            await manager.updateOne(
+                Character,
+                {
+                    _id: ObjectID(player.id),
+                },
+                {
+                    $pull: {
+                        ownedItemsIds: ObjectID(itemData.id),
+                    },
                 }
-            })
-            await manager.updateOne(Character, {
-                _id: ObjectID(player.id)
-            }, {
-                $set :{
-                    gold: player.gold
+            );
+            await manager.updateOne(
+                Character,
+                {
+                    _id: ObjectID(player.id),
+                },
+                {
+                    $set: {
+                        gold: player.gold,
+                    },
                 }
-            })
-        })
+            );
+        });
     }
 
     buyItem(socket: SocketIO.Socket, player: Player) {
         socket.on('buyItem', (itemData: ItemBlueprint) => {
-            let firstEmptyFieldInBackpack = Equipment.getFirstEmptyFieldIdInBackpack(player)
+            const firstEmptyFieldInBackpack = Equipment.getFirstEmptyFieldIdInBackpack(
+                player
+            );
 
-            /*
-            for (let i = 1; i < 42; i++) {
-                let playerBackpack = player.statistics.equipment.backpack
-                let instanceInCheckedField = playerBackpack.find(itemInField => itemInField.fieldInEquipment === `field${i}`)
-                if (!instanceInCheckedField) {
-                    firstEmptyFieldInBackpack = `field${i}`
-                    break
-                }
-            }
-
-             */
-
-            player.statistics.equipment.addToBackpack(itemData, firstEmptyFieldInBackpack, player).then(() => {
-                player.gold -= itemData.value
-            })
-        })
+            player.statistics.equipment
+                .addToBackpack(itemData, firstEmptyFieldInBackpack, player)
+                .then(() => {
+                    player.gold -= itemData.value;
+                });
+        });
     }
 
     abortTrade(socket: SocketIO.Socket, player: Player) {
         socket.on('tradeAborted', (tradeId: number) => {
-            let trade = this.ACTUAL_TRADES_LIST.find(trade => trade.id === tradeId)
+            const trade = this.ACTUAL_TRADES_LIST.find(
+                (trade) => trade.id === tradeId
+            );
 
-            trade.player1.instance.playerSocket.emit('tradeCompleted')
-            trade.player2.instance.playerSocket.emit('tradeCompleted')
+            trade.player1.instance.playerSocket.emit('tradeCompleted');
+            trade.player2.instance.playerSocket.emit('tradeCompleted');
 
-            trade.player1 = null
-            trade.player2 = null
-            this.ACTUAL_TRADES_LIST = this.ACTUAL_TRADES_LIST.filter(tradeInstance => {
-                if (tradeInstance.id !== trade.id) {
-                    return tradeInstance
+            trade.player1 = null;
+            trade.player2 = null;
+            this.ACTUAL_TRADES_LIST = this.ACTUAL_TRADES_LIST.filter(
+                (tradeInstance) => {
+                    if (tradeInstance.id !== trade.id) {
+                        return tradeInstance;
+                    }
                 }
-            })
-        })
+            );
+        });
     }
 
     requestTradeWithPlayer(socket: SocketIO.Socket, player: Player) {
         socket.on('requestTradeWithPlayer', (playerId: string) => {
-            let requestedPlayerInstance = this.PLAYERS_LIST.find(
+            const requestedPlayerInstance = this.PLAYERS_LIST.find(
                 (playerInstance) => playerInstance.id === playerId
             );
 
@@ -236,13 +238,9 @@ export default class GameServer {
                 return itemInstance.id !== item.id;
             });
 
-            /*
-            item.item.fieldInEquipment = `field${Math.floor(
-                Math.random() * 42
-            )}`;
-
-             */
-            item.item.fieldInEquipment = Equipment.getFirstEmptyFieldIdInBackpack(player)
+            item.item.fieldInEquipment = Equipment.getFirstEmptyFieldIdInBackpack(
+                player
+            );
             player.statistics.equipment.backpack.push(item.item);
 
             socket.emit('pickedUpItem', item.item);
@@ -260,31 +258,27 @@ export default class GameServer {
                 }
             );
         });
-
-        //player.statistics.equipment.backpack.push(item.)
     }
 
     dragItem(socket: SocketIO.Socket, player: Player) {
         socket.on('dragItem', async (draggedItemData) => {
-            console.log(draggedItemData);
-            console.log('before dragged ^^^');
-
             // PRZENIESIENIE Z EKWIPUNKU DO PLECAKA
             if (
                 !draggedItemData.actualField.includes('field') &&
                 draggedItemData.destinationField.includes('field')
             ) {
-                for (let i in player.statistics.equipment) {
+                for (const i in player.statistics.equipment) {
                     if (
                         Array.isArray(player.statistics.equipment[i]) ||
                         player.statistics.equipment[i] === null
-                    )
+                    ) {
                         continue;
+                    }
                     if (
                         player.statistics.equipment[i].fieldInEquipment ===
                         draggedItemData.actualField
                     ) {
-                        let updatedItem = Object.assign(
+                        const updatedItem = Object.assign(
                             {},
                             player.statistics.equipment[i]
                         );
@@ -296,8 +290,6 @@ export default class GameServer {
                             player
                         );
                         player.statistics.maxHealth = player.statistics.calculateMaxHealth();
-                        console.log(player.statistics.allStatistics);
-                        console.log('after dragged ^^^');
                     }
                 }
             } else if (
@@ -306,27 +298,21 @@ export default class GameServer {
             ) {
                 // PRZENIESIENIE Z PLECAKA DO PLECAKA
                 console.log('case 2');
-                for (let i in player.statistics.equipment) {
+                for (const i in player.statistics.equipment) {
                     if (i === 'backpack') {
                         console.log('i = backpack');
-                        for (let itemInBackpack in player.statistics.equipment[
-                            i
-                            ]) {
-                            console.log(
-                                player.statistics.equipment[i][itemInBackpack]
-                                    .fieldInEquipment,
-                                draggedItemData.actualField
-                            );
+                        for (const itemInBackpack in player.statistics
+                            .equipment[i]) {
                             if (
                                 player.statistics.equipment[i][itemInBackpack]
                                     .fieldInEquipment ===
                                 draggedItemData.actualField
                             ) {
-                                let updatedObject = Object.assign(
+                                const updatedObject = Object.assign(
                                     {},
                                     player.statistics.equipment[i][
                                         itemInBackpack
-                                        ]
+                                    ]
                                 );
                                 updatedObject.fieldInEquipment =
                                     draggedItemData.destinationField;
@@ -335,36 +321,36 @@ export default class GameServer {
                                 player.statistics.equipment.updateItemAfterDragging(
                                     player.statistics.equipment[i][
                                         itemInBackpack
-                                        ],
+                                    ],
                                     updatedObject,
                                     player
                                 );
                                 player.statistics.equipment[i][
                                     itemInBackpack
-                                    ].fieldInEquipment =
+                                ].fieldInEquipment =
                                     draggedItemData.destinationField;
                             }
                         }
                     }
                 }
-            } // PRZENIESIENIE Z PLECAKA DO EKWIPUNKU
-            else if (
+            } else if (
                 !draggedItemData.destinationField.includes('field') &&
                 draggedItemData.actualField.includes('field') &&
                 !draggedItemData.destinationField.includes('ctx')
             ) {
-                for (let i in player.statistics.equipment) {
+                // PRZENIESIENIE Z PLECAKA DO EKWIPUNKU
+
+                for (const i in player.statistics.equipment) {
                     if (i !== 'backpack') continue;
-                    for (let itemInBackpack in player.statistics.equipment[i]) {
-                        console.log(
-                            player.statistics.equipment[i][itemInBackpack]
-                        );
+                    for (const itemInBackpack in player.statistics.equipment[
+                        i
+                    ]) {
                         if (
                             player.statistics.equipment[i][itemInBackpack]
                                 .fieldInEquipment ===
                             draggedItemData.actualField
                         ) {
-                            let updatedObject = Object.assign(
+                            const updatedObject = Object.assign(
                                 {},
                                 player.statistics.equipment[i][itemInBackpack]
                             );
@@ -380,22 +366,21 @@ export default class GameServer {
                         }
                     }
                 }
-            }
-            // PRZENIESIENIE NA ZIEMIE, NA RAZIE Z PLECAKA
-            else if (draggedItemData.destinationField.includes('ctx')) {
-                for (let i in player.statistics.equipment) {
+            } else if (draggedItemData.destinationField.includes('ctx')) {
+                // PRZENIESIENIE NA ZIEMIE, NA RAZIE Z PLECAKA
+
+                for (const i in player.statistics.equipment) {
                     if (i !== 'backpack') continue;
                     console.log(player.statistics.equipment[i]);
-                    for (let itemInBackpack in player.statistics.equipment[i]) {
-                        console.log(
-                            player.statistics.equipment[i][itemInBackpack]
-                        );
+                    for (const itemInBackpack in player.statistics.equipment[
+                        i
+                    ]) {
                         if (
                             player.statistics.equipment[i][itemInBackpack]
                                 .fieldInEquipment ===
                             draggedItemData.actualField
                         ) {
-                            let updatedObject = Object.assign(
+                            const updatedObject = Object.assign(
                                 {},
                                 player.statistics.equipment[i][itemInBackpack]
                             );
@@ -404,7 +389,7 @@ export default class GameServer {
 
                             player.statistics.equipment[
                                 i
-                                ] = player.statistics.equipment[i].filter(
+                            ] = player.statistics.equipment[i].filter(
                                 (item) => {
                                     if (
                                         item.fieldInEquipment !==
@@ -429,31 +414,29 @@ export default class GameServer {
                             });
 
                             const manager = getMongoManager();
-                            //manager.remove(Character, {});
+                            // manager.remove(Character, {});
 
                             await manager.updateOne(
                                 Character,
                                 {
                                     'ownedItems.fieldInEquipment':
-                                    draggedItemData.actualField,
+                                        draggedItemData.actualField,
                                 },
                                 {
                                     $pull: {
                                         ownedItems: {
                                             fieldInEquipment:
-                                            draggedItemData.actualField,
+                                                draggedItemData.actualField,
                                         },
                                     },
                                 }
                             );
 
                             break;
-
                         }
                     }
                 }
             }
-
         });
     }
 
@@ -494,7 +477,7 @@ export default class GameServer {
                             y: player.y,
                             currentDirection: player.currentDirection,
                             'statistics.health': player.statistics._health,
-                            gold: player.gold
+                            gold: player.gold,
                         },
                     }
                 )
@@ -510,10 +493,10 @@ export default class GameServer {
 
     addToGroup(socket: SocketIO.Socket, player: Player): void {
         socket.on('addToGroup', (playerId: string) => {
-            let addedPlayer = <Player>(
+            const addedPlayer = <Player>(
                 this.PLAYERS_LIST.find((player) => player.id === playerId)
             );
-            let playerGroup = new Group(player, addedPlayer);
+            const playerGroup = new Group(player, addedPlayer);
             playerGroup.members.forEach((member: Player) => {
                 member.playerSocket.emit('addedToGroup', playerGroup);
             });
@@ -522,16 +505,16 @@ export default class GameServer {
 
     messageHandler(socket: SocketIO.Socket, player: Player): void {
         socket.on('sendMsgToServer', (data: string) => {
-            let msg = data.split('/')[1];
+            const msg = data.split('/')[1];
 
             if (new RegExp('(heal )\\d+').test(msg)) {
-                let healValue = msg.split(' ')[1];
+                const healValue = msg.split(' ')[1];
                 player.statistics.health = parseInt(healValue);
             }
 
             if (new RegExp('(t+p) \\d+[,]\\d+').test(msg)) {
                 // @ts-ignore
-                let coordinates = msg
+                const coordinates = msg
                     .match(new RegExp('\\d+[,]\\d+'))[0]
                     .split(',');
 
@@ -562,7 +545,7 @@ export default class GameServer {
                 player.y = parseInt(coordinates![1]) * 32;
             }
 
-            //console.log(data);
+            // console.log(data);
             this.SOCKETS_LIST.forEach((socket) => {
                 console.log(socket.id);
                 socket.emit('addToChat', data);
@@ -579,18 +562,15 @@ export default class GameServer {
     }
 
     emitGameData(): void {
-
-
-        //const dataEmitWorker = new Worker('./server/game/core/dataEmiter.js', { type: 'module' })
+        // const dataEmitWorker = new Worker('./server/game/core/dataEmiter.js', { type: 'module' })
 
         setInterval(() => {
-            let pack = {
+            const pack = {
                 playersData: Player.update(),
                 mapData: this.map.mapDataToEmit,
             };
 
-            this.socketio.sockets.emit('newGameData', pack)
+            this.socketio.sockets.emit('newGameData', pack);
         }, 1000 / 25);
-
     }
 }

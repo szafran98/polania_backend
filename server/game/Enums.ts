@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export enum Scene {
     WALK = 'WALK',
     FIGHT = 'FIGHT',
@@ -32,8 +34,8 @@ export enum ItemType {
     BOOTS = 'boots',
     RING = 'ring',
     AMULET = 'amulet',
-    CONSUMABLE = 'consumable'
-    //BACKPACK = 'backpack',
+    CONSUMABLE = 'consumable',
+    // BACKPACK = 'backpack',
 }
 
 export enum CombatType {

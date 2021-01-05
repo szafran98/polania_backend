@@ -1,14 +1,6 @@
-import {
-    Entity,
-    ObjectIdColumn,
-    ObjectID,
-    Column,
-    OneToOne,
-    JoinColumn,
-    BaseEntity,
-} from 'typeorm';
-import Stats from './Stats';
-import { ItemType, Class } from '../../game/Enums';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
+import Stats from './Stats'
+import { Class, ItemType } from '../../game/Enums'
 
 @Entity()
 export default class ItemBlueprint extends BaseEntity {

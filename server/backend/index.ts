@@ -1,12 +1,12 @@
-import 'reflect-metadata';
-import { createConnection } from 'typeorm';
-import GameServer from '../game/core/GameServer';
+import 'reflect-metadata'
+import { createConnection } from 'typeorm'
+import GameServer from '../game/core/GameServer'
 
-export let game: GameServer;
+export let game: GameServer
 
 createConnection()
-    .then(async (connection) => {
-        /*
+  .then(async (connection) => {
+    /*
         const app = express();
 
         app.set('port', process.env.PORT || 2000);
@@ -44,8 +44,8 @@ createConnection()
         game = new GameServer(io);
 
              */
-    })
-    .catch((error) => console.log(error));
+  })
+  .catch((error) => console.log(error))
 
 /*
 await connection.dropDatabase()

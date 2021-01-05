@@ -1,4 +1,4 @@
-import { Entity, ObjectIdColumn, ObjectID, Column, BaseEntity } from 'typeorm';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
 
 @Entity()
 export default class Stats extends BaseEntity {

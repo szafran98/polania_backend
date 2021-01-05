@@ -1,13 +1,5 @@
-import {
-    Entity,
-    ObjectIdColumn,
-    ObjectID,
-    Column,
-    OneToOne,
-    JoinColumn,
-    BaseEntity,
-} from 'typeorm';
-import Stats from './Stats';
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
+import Stats from './Stats'
 
 @Entity()
 export default class EnemyExample extends BaseEntity {
@@ -44,7 +36,7 @@ export default class EnemyExample extends BaseEntity {
     @Column((type) => Stats)
     statistics!: Stats;
 
-    static findByMapId(mapId: number) {
-        return this.findOne({ mapId: mapId });
+    static findByMapId (mapId: number) {
+      return this.findOne({ mapId: mapId })
     }
 }

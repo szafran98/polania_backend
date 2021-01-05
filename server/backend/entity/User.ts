@@ -1,17 +1,16 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    Unique,
-    CreateDateColumn,
-    UpdateDateColumn,
-    BaseEntity,
-    ObjectIdColumn, ObjectID,
-} from 'typeorm';
-import { Length, IsNotEmpty, IsEmail } from 'class-validator';
-import bcrypt from 'bcryptjs';
-import Character from './Character';
-import { UniqueOnDatabase } from '../examples/UniqueValidation';
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ObjectID,
+  ObjectIdColumn,
+  Unique,
+  UpdateDateColumn
+} from 'typeorm'
+import { IsEmail, IsNotEmpty, Length } from 'class-validator'
+import bcrypt from 'bcryptjs'
+import { UniqueOnDatabase } from '../examples/UniqueValidation'
 
 @Entity()
 @Unique(['username'])
@@ -47,11 +46,11 @@ export class User extends BaseEntity {
     @Column()
     charactersIds!: ObjectID[];
 
-    hashPassword() {
-        this.password = bcrypt.hashSync(this.password, 8);
+    hashPassword () {
+      this.password = bcrypt.hashSync(this.password, 8)
     }
 
-    checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-        return bcrypt.compareSync(unencryptedPassword, this.password);
+    checkIfUnencryptedPasswordIsValid (unencryptedPassword: string) {
+      return bcrypt.compareSync(unencryptedPassword, this.password)
     }
 }
