@@ -1,0 +1,36 @@
+{
+  "baseStats": {
+    "strength": 3,
+    "intellect": 3,
+    "dexterity": 3
+  },
+  "definitions": {
+    "warrior": {
+      "mainStatistic": "strength",
+      "canUseWeapons": [
+        "1h",
+        "2h",
+        "shield"
+      ],
+      "classBonus": "vendorPrize"
+    },
+    "mage": {
+      "mainStatistic": "intellect",
+      "canUseWeapons": [
+        "wand",
+        "grimuar"
+      ],
+      "classBonus": "healingEnhance"
+    },
+    "hunter": {
+      "mainStatistic": "dexterity",
+      "canUseWeapons": [
+        "bow",
+        "crossbow",
+        "throwing",
+        "shield"
+      ],
+      "classBonus": "expBonus"
+    }
+  }
+}

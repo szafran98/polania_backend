@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm'
-import Stats from './Stats'
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import Stats from './Stats';
+import { Class } from '../../game/Enums';
 
 @Entity()
 export default class Character extends BaseEntity {
@@ -29,4 +30,7 @@ export default class Character extends BaseEntity {
 
     @Column()
     gold!: number;
+
+    @Column()
+    class!: Class;
 }

@@ -8,6 +8,7 @@ import { Equipment } from './Equipment';
 import { getRepository } from 'typeorm';
 import OwnedItem from '../../../backend/entity/OwnedItem';
 import { ObjectID } from 'mongodb';
+import { Class } from '../../Enums';
 
 export default class Player extends Entity implements IPlayer {
     // POCZĄTKOWE WARTOŚCI INSTANCJI PLAYER
@@ -26,6 +27,7 @@ export default class Player extends Entity implements IPlayer {
 
     isPlayerCollided = false;
     gold: number;
+    class: Class;
 
     // equipment: Equipment;
     constructor(data: any) {
@@ -34,6 +36,7 @@ export default class Player extends Entity implements IPlayer {
         this.socketId = data.socketId;
         this.imageSrc = data.imageSrc;
         this.gold = data.gold;
+        this.class = data.class;
 
         console.log(data);
         this.getPlayerOwnedItemsData(data.ownedItemsIds).then((res: any[]) => {

@@ -1,7 +1,7 @@
 import Enemy from './server/game/core/characters/Enemy';
 import { Class, ItemType } from './server/game/Enums';
-import Npc from "./server/game/core/characters/Npc";
-import {ObjectID} from "mongodb";
+import Npc from './server/game/core/characters/Npc';
+import { ObjectID } from 'mongodb';
 
 export interface IReceivedMap {
     compressionlevel: number;
@@ -161,7 +161,8 @@ export interface IPlayer extends IEntity {
     pressingUp?: boolean;
     pressingDown?: boolean;
     mapData?: any;
-    gold: number
+    gold: number;
+    class: Class;
 }
 
 export interface IEnemy extends IEntity {
@@ -214,10 +215,10 @@ export interface INpc {
     width: number;
     height: number;
     imageSrc: string;
-    offeringItems: any[]
+    offeringItems: any[];
     conversationOptions: object;
     conversationOptionsTree: object;
-    databaseId: string
+    databaseId: string;
 }
 
 export interface IOwnedItem {

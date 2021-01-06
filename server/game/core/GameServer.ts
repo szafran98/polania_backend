@@ -98,6 +98,7 @@ export default class GameServer {
 
                         if (!isActualyLogged) {
                             const player = new Player(character);
+                            console.log(character);
 
                             this.PLAYERS_LIST.push(player);
                             this.SOCKETS_LIST.push(socket);
