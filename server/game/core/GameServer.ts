@@ -117,10 +117,17 @@ export default class GameServer {
                             this.buyItem(socket, player);
                             this.sellItem(socket, player);
                             this.doItemDbClickAction(socket, player);
+                            this.moveOnPath(socket, player);
                             // this.dumpCharacterStateToDb(player);
                         }
                     });
             });
+        });
+    }
+
+    moveOnPath(socket: SocketIO.Socket, player: Player) {
+        socket.on('moveOnPath', (pathData: any) => {
+            player.moveOnPath(pathData);
         });
     }
 

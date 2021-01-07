@@ -71,6 +71,42 @@ export default class Player extends Entity implements IPlayer {
         return this.statistics._experience;
     }
 
+    moveOnPath(pathData: string[]) {
+        let directions = {
+            right: 2,
+            left: 1,
+            up: 3,
+            down: 0,
+        };
+        let i = 0;
+        let pathIndex = 0;
+        const moveInterval = setInterval(() => {
+            if (typeof pathData[pathIndex] === 'undefined') {
+                clearInterval(moveInterval);
+                this.hasMoved = false;
+            } else {
+                if (i === 0) {
+                    this.hasMoved = true;
+                    if (pathData[pathIndex] === 'right')
+                        this.currentDirection = 2;
+                    if (pathData[pathIndex] === 'left')
+                        this.currentDirection = 1;
+                    if (pathData[pathIndex] === 'down')
+                        this.currentDirection = 0;
+                    if (pathData[pathIndex] === 'up') this.currentDirection = 3;
+
+                    console.log(pathData[pathIndex]);
+                    this.moveByTile(directions[pathData[pathIndex]]);
+                    pathIndex++;
+                }
+                i += 2;
+                if (i === 32) {
+                    i = 0;
+                }
+            }
+        }, 1000 / 25);
+    }
+
     promoteToNextLevel() {
         this.statistics._level++;
         this.statistics._experience = 0;
@@ -171,6 +207,8 @@ export default class Player extends Entity implements IPlayer {
         this.playerSocket.on(
             'keyPress',
             (data: { inputId: string; state: boolean }) => {
+                //console.log('krok');
+                //if (this.hasMoved) return;
                 if (data.inputId === 'left') {
                     this.pressingLeft = data.state;
                 } else if (data.inputId === 'right') {
@@ -198,6 +236,14 @@ export default class Player extends Entity implements IPlayer {
 
     // PLAYER MOVE
     moveByTile(direction: number): void {
+        console.log('move by tile');
+        console.log(
+            this.pressingLeft,
+            this.pressingRight,
+            this.pressingDown,
+            this.pressingUp
+        );
+
         if (this.checkCollisions()) {
             return;
         }
