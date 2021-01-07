@@ -17,7 +17,7 @@ export default class Player extends Entity implements IPlayer {
     lastDirection: number = 0;
     frameCount: number = 0;
     currentLoopIndex: number = 0;
-    maxSpeed: number = 2;
+    maxSpeed: number = 4;
     socketId: string;
     pressingRight: boolean = false;
     pressingLeft: boolean = false;
@@ -101,12 +101,12 @@ export default class Player extends Entity implements IPlayer {
                     this.moveByTile(directions[pathData[pathIndex]]);
                     pathIndex++;
                 }
-                i += 2;
+                i += 4;
                 if (i === 32) {
                     i = 0;
                 }
             }
-        }, 1000 / 25);
+        }, 1000 / 16);
     }
 
     promoteToNextLevel() {
@@ -277,15 +277,15 @@ export default class Player extends Entity implements IPlayer {
                 } else if (direction === 0) {
                     this.y += this.maxSpeed;
                 }
-                this.frameCount += 8;
-                move += 2;
+                this.frameCount += 16;
+                move += 4;
                 if (move % 32 === 0) {
                     clearInterval(moveTimer);
                     this.currentLoopIndex = 0;
                     this.frameCount = 0;
                     this.hasMoved = false;
                 }
-            }, 1000 / 25);
+            }, 1000 / 16);
         }
     }
 
@@ -349,7 +349,7 @@ export default class Player extends Entity implements IPlayer {
         if (isColliding) {
             this.onCollision();
         } else {
-            this.maxSpeed = 2;
+            this.maxSpeed = 4;
             this.isPlayerCollided = false;
         }
 
