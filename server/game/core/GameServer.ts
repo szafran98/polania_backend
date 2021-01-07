@@ -20,6 +20,7 @@ import ItemBlueprint from '../../backend/entity/ItemBlueprint';
 import { ItemType } from '../Enums';
 import { Equipment } from './characters/Equipment';
 import * as expToLevelTable from './exp_table.json';
+import { decode, encode } from '@msgpack/msgpack';
 
 export default class GameServer {
     SOCKETS_LIST: SocketIO.Socket[] = [];
@@ -595,8 +596,16 @@ export default class GameServer {
                 playersData: Player.update(),
                 mapData: this.map.mapDataToEmit,
             };
+            /*
+            const pack = {
+                playersData: Player.update(),
+                mapData: this.map.mapDataToEmit,
+            };
+
+             */
+            //console.log(pack);
 
             this.socketio.sockets.emit('newGameData', pack);
-        }, 1000 / 25);
+        }, 1000 / 15);
     }
 }

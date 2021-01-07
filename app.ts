@@ -5,12 +5,15 @@ import helmet from 'helmet';
 import cors from 'cors';
 import routes from './server/backend/routes';
 import GameServer from './server/game/core/GameServer';
+const customParser = require('socket.io-msgpack-parser');
 
 const app = express();
 app.set('port', process.env.PORT || 2000);
 
 let serv = require('http').Server(app);
-let io: SocketIO.Server = SocketIO(serv, {});
+let io: SocketIO.Server = SocketIO(serv, {
+    //parser: customParser,
+});
 
 // Call midlewares
 app.use(cors());
@@ -19,7 +22,14 @@ app.use(bodyParser.json());
 
 app.use(
     cors({
-        origin: ['http://localhost:2000/', 'http://localhost:8080/', 'http://159.65.115.115/', 'http://159.65.115.115:80/server', 'http://polania.ml/', 'http://www.polania.ml/'],
+        origin: [
+            'http://localhost:2000/',
+            'http://localhost:8080/',
+            'http://159.65.115.115/',
+            'http://159.65.115.115:80/server',
+            'http://polania.ml/',
+            'http://www.polania.ml/',
+        ],
     })
 );
 app.options('*', cors());

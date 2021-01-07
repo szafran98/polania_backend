@@ -29,6 +29,8 @@ export default class Player extends Entity implements IPlayer {
     gold: number;
     class: Class;
 
+    hasMapData = false;
+
     // equipment: Equipment;
     constructor(data: any) {
         super(data);
@@ -236,6 +238,7 @@ export default class Player extends Entity implements IPlayer {
 
     // PLAYER MOVE
     moveByTile(direction: number): void {
+        /*
         console.log('move by tile');
         console.log(
             this.pressingLeft,
@@ -243,6 +246,8 @@ export default class Player extends Entity implements IPlayer {
             this.pressingDown,
             this.pressingUp
         );
+
+         */
 
         if (this.checkCollisions()) {
             return;
