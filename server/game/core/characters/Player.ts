@@ -17,7 +17,7 @@ export default class Player extends Entity implements IPlayer {
     lastDirection: number = 0;
     frameCount: number = 0;
     currentLoopIndex: number = 0;
-    maxSpeed: number = 1;
+    maxSpeed: number = 2;
     socketId: string;
     pressingRight: boolean = false;
     pressingLeft: boolean = false;
@@ -375,7 +375,7 @@ export default class Player extends Entity implements IPlayer {
         if (isColliding) {
             this.onCollision();
         } else {
-            this.maxSpeed = 1;
+            this.maxSpeed = 2;
             this.isPlayerCollided = false;
         }
 

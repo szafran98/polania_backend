@@ -170,7 +170,7 @@ if (cluster.isMaster) {
                     hasMoved: playerData.hasMoved,
                 });
             }
-        }, 1000 / 100);
+        }, 1000 / 75);
     }
 }
 
