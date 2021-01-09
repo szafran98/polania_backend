@@ -606,6 +606,6 @@ export default class GameServer {
             //console.log(pack);
 
             this.socketio.sockets.emit('newGameData', pack);
-        }, 1000 / 16);
+        }, 1000 / 25);
     }
 }

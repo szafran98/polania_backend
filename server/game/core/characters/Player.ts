@@ -1,5 +1,5 @@
 import { playerCamera } from '../../camera';
-import { game } from '../../../../app';
+import { bgCluster, game } from '../../../../app';
 import Entity from './Entity';
 import { IPlayer } from '../../../../Interfaces';
 import * as SocketIO from 'socket.io';
@@ -17,7 +17,7 @@ export default class Player extends Entity implements IPlayer {
     lastDirection: number = 0;
     frameCount: number = 0;
     currentLoopIndex: number = 0;
-    maxSpeed: number = 4;
+    maxSpeed: number = 1;
     socketId: string;
     pressingRight: boolean = false;
     pressingLeft: boolean = false;
@@ -45,6 +45,8 @@ export default class Player extends Entity implements IPlayer {
             this.statistics.equipment = new Equipment(res);
             this.statistics.maxHealth = this.statistics.calculateMaxHealth();
         });
+
+        this.moveDataFromClusterListener();
     }
 
     get group(): Group {
@@ -193,6 +195,7 @@ export default class Player extends Entity implements IPlayer {
             this.moveByTile(this.currentDirection);
         }
 
+        /*
         // CHARACTER ANIMATION COUNTER
         if (this.frameCount >= 32) {
             this.frameCount = 0;
@@ -202,6 +205,8 @@ export default class Player extends Entity implements IPlayer {
         if (this.currentLoopIndex >= 4) {
             this.currentLoopIndex = 0;
         }
+
+         */
     }
 
     keyPressListener(): void {
@@ -248,6 +253,7 @@ export default class Player extends Entity implements IPlayer {
         );
 
          */
+        //if (this.hasMoved) return;
 
         if (this.checkCollisions()) {
             return;
@@ -257,6 +263,9 @@ export default class Player extends Entity implements IPlayer {
         if (!this.isPlayerCollided) {
             let move = 0;
 
+            bgCluster.send(this);
+
+            /*
             playerCamera(
                 direction,
                 this.x,
@@ -265,6 +274,9 @@ export default class Player extends Entity implements IPlayer {
                 this.mapData
             );
 
+             */
+
+            /*
             const moveTimer = setInterval(() => {
                 this.hasMoved = true;
 
@@ -286,7 +298,21 @@ export default class Player extends Entity implements IPlayer {
                     this.hasMoved = false;
                 }
             }, 1000 / 16);
+
+             */
         }
+    }
+
+    moveDataFromClusterListener() {
+        bgCluster.on('message', (newPlayerData: IPlayer) => {
+            //console.log(newPlayerData);
+
+            this.x = newPlayerData.x;
+            this.y = newPlayerData.y;
+            this.frameCount = newPlayerData.frameCount;
+            this.currentLoopIndex = newPlayerData.currentLoopIndex;
+            //this.hasMoved = newPlayerData.hasMoved;
+        });
     }
 
     // TERRAIN COLLISIONS
@@ -349,7 +375,7 @@ export default class Player extends Entity implements IPlayer {
         if (isColliding) {
             this.onCollision();
         } else {
-            this.maxSpeed = 4;
+            this.maxSpeed = 1;
             this.isPlayerCollided = false;
         }
 
