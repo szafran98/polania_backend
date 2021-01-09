@@ -163,6 +163,7 @@ export interface IPlayer extends IEntity {
     mapData?: any;
     gold: number;
     class: Class;
+    isContinousMoving: boolean;
 }
 
 export interface IEnemy extends IEntity {

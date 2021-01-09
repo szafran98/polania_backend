@@ -596,16 +596,8 @@ export default class GameServer {
                 playersData: Player.update(),
                 mapData: this.map.mapDataToEmit,
             };
-            /*
-            const pack = {
-                playersData: Player.update(),
-                mapData: this.map.mapDataToEmit,
-            };
-
-             */
-            //console.log(pack);
 
             this.socketio.sockets.emit('newGameData', pack);
-        }, 1000 / 25);
+        }, 1000 / 16);
     }
 }

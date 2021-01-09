@@ -29,6 +29,8 @@ export default class Player extends Entity implements IPlayer {
     gold: number;
     class: Class;
 
+    isContinousMoving = false;
+
     hasMapData = false;
 
     // equipment: Equipment;
@@ -99,7 +101,7 @@ export default class Player extends Entity implements IPlayer {
                         this.currentDirection = 0;
                     if (pathData[pathIndex] === 'up') this.currentDirection = 3;
 
-                    console.log(pathData[pathIndex]);
+                    //console.log(pathData[pathIndex]);
                     this.moveByTile(directions[pathData[pathIndex]]);
                     pathIndex++;
                 }
@@ -108,7 +110,7 @@ export default class Player extends Entity implements IPlayer {
                     i = 0;
                 }
             }
-        }, 1000 / 16);
+        }, 1000 / 25);
     }
 
     promoteToNextLevel() {
@@ -214,8 +216,6 @@ export default class Player extends Entity implements IPlayer {
         this.playerSocket.on(
             'keyPress',
             (data: { inputId: string; state: boolean }) => {
-                //console.log('krok');
-                //if (this.hasMoved) return;
                 if (data.inputId === 'left') {
                     this.pressingLeft = data.state;
                 } else if (data.inputId === 'right') {
@@ -225,6 +225,17 @@ export default class Player extends Entity implements IPlayer {
                 } else if (data.inputId === 'up') {
                     this.pressingUp = data.state;
                 }
+                if (data.state === true) {
+                    this.hasMoved = true;
+                    this.updatePosition();
+                }
+                //bgCluster.send(this);
+
+                //console.log('krok');
+                //if (this.hasMoved) return;
+
+                //console.log(data.state);
+                //this.updatePosition();
             }
         );
     }
@@ -262,6 +273,8 @@ export default class Player extends Entity implements IPlayer {
 
         if (!this.isPlayerCollided) {
             let move = 0;
+
+            //this.hasMoved = true;
 
             bgCluster.send(this);
 
@@ -305,14 +318,41 @@ export default class Player extends Entity implements IPlayer {
 
     moveDataFromClusterListener() {
         bgCluster.on('message', (newPlayerData: IPlayer) => {
-            //console.log(newPlayerData);
+            //console.log(newPlayerData.isContinousMoving);
+            /*
+            console.log(
+                newPlayerData.currentLoopIndex,
+                newPlayerData.hasMoved,
+                newPlayerData.isContinousMoving
+            );
+
+             */
 
             this.x = newPlayerData.x;
             this.y = newPlayerData.y;
             this.frameCount = newPlayerData.frameCount;
             this.currentLoopIndex = newPlayerData.currentLoopIndex;
-            //this.hasMoved = newPlayerData.hasMoved;
+            this.hasMoved = newPlayerData.hasMoved;
+            this.isContinousMoving = newPlayerData.isContinousMoving;
+
+            if (!this.hasMoved) {
+                this.setPlayerStopped(this.x, this.y);
+                //this.currentLoopIndex = 0;
+                //this.frameCount = 0;
+            }
         });
+    }
+
+    setPlayerStopped(playerX, playerY) {
+        let x = playerX;
+        let y = playerY;
+
+        setTimeout(() => {
+            if (x === this.x && y === this.y) {
+                this.currentLoopIndex = 0;
+                this.frameCount = 0;
+            }
+        }, 100);
     }
 
     // TERRAIN COLLISIONS
@@ -338,7 +378,7 @@ export default class Player extends Entity implements IPlayer {
                 this.currentDirection === 2 &&
                 this.y === game.map.collisionMap[collider].y1
             ) {
-                console.log('from left collision');
+                //console.log('from left collision');
                 // this.onCollision();
                 isColliding = true;
                 break;

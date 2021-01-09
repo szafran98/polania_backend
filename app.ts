@@ -77,19 +77,35 @@ if (cluster.isMaster) {
     game = new GameServer(io);
 } else {
     console.log(`Worker ${process.pid} started`);
+    //let globalFrameCount = 0;
+    let movingPlayers: IPlayer[] = [];
 
     process.on('message', (playerData: any) => {
-        processPlayerMove(playerData);
+        //console.log(typeof playerData);
+        if (playerData.hasMoved) {
+            processPlayerMove(playerData);
+        }
     });
 
     function processPlayerMove(playerData: IPlayer) {
-        //console.log(playerData);
+        //playerData = addToMovingPlayersIfNotYet(playerData);
+        //playerData.hasMoved = true;
+        /*
+        console.log(
+            playerData.pressingLeft,
+            playerData.pressingRight,
+            playerData.pressingUp,
+            playerData.pressingDown
+        );
+
+         */
+        //console.log(playerData.hasMoved);
         let startPos = {
             x: playerData.x,
             y: playerData.y,
         };
         const moveInterval = setInterval(() => {
-            playerData.hasMoved = true;
+            //playerData.hasMoved = true;
             if (playerData.currentDirection === 2) {
                 playerData.x += playerData.maxSpeed;
             } else if (playerData.currentDirection === 1) {
@@ -143,7 +159,10 @@ if (cluster.isMaster) {
              */
 
             //console.log(playerData.y);
+            //console.log(playerData.frameCount);
             //console.log(playerData.currentLoopIndex);
+
+            //console.log('case 2');
 
             process.send({
                 x: playerData.x,
@@ -151,16 +170,24 @@ if (cluster.isMaster) {
                 frameCount: playerData.frameCount,
                 currentLoopIndex: playerData.currentLoopIndex,
                 hasMoved: playerData.hasMoved,
+                isContinousMoving: playerData.isContinousMoving,
             });
 
-            playerData.frameCount += 16;
+            playerData.frameCount += 8;
             // move += 4;
             if (playerData.x % 32 === 0 && playerData.y % 32 === 0) {
-                //console.log('move = 32');
+                //console.log(playerData.isContinousMoving);
                 clearInterval(moveInterval);
-                playerData.currentLoopIndex = 0;
-                playerData.frameCount = 0;
+                /*
+                if (!playerData.isContinousMoving) {
+                    playerData.currentLoopIndex = 0;
+                    playerData.frameCount = 0;
+                }
+
+                 */
                 playerData.hasMoved = false;
+
+                //console.log('case 3');
 
                 process.send({
                     x: playerData.x,
@@ -168,9 +195,10 @@ if (cluster.isMaster) {
                     frameCount: playerData.frameCount,
                     currentLoopIndex: playerData.currentLoopIndex,
                     hasMoved: playerData.hasMoved,
+                    isContinousMoving: playerData.isContinousMoving,
                 });
             }
-        }, 1000 / 75);
+        }, 1000 / 64);
     }
 }
 
